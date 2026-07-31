@@ -128,6 +128,30 @@ st.markdown("""
         font-family: 'Lora', Georgia, serif !important;
     }
     
+    /* Input Elements styling (white background & dark text) */
+    div[data-testid="stTextArea"] textarea {
+        background-color: #ffffff !important;
+        color: #121212 !important;
+        border: 1px solid #c2beb6 !important;
+        font-family: 'Lora', Georgia, serif !important;
+        font-size: 1.05rem !important;
+        line-height: 1.6 !important;
+    }
+    div[data-testid="stTextArea"] textarea:focus {
+        border-color: #121212 !important;
+        box-shadow: none !important;
+    }
+    div[data-testid="stTextInput"] input {
+        background-color: #ffffff !important;
+        color: #121212 !important;
+        border: 1px solid #c2beb6 !important;
+        font-family: 'Inter', sans-serif !important;
+    }
+    div[data-testid="stTextInput"] input:focus {
+        border-color: #121212 !important;
+        box-shadow: none !important;
+    }
+    
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Playfair Display', Georgia, serif !important;
         color: #121212 !important;
@@ -646,20 +670,17 @@ if not st.session_state.authenticated:
 # Header and Masthead
 date_str = datetime.now().strftime("%A, %B %d, %Y").upper()
 
-st.markdown(f"""
-<header class="nyt-header">
-    <div class="nyt-top-bar">
-        <div>{date_str}</div>
-        <div style="letter-spacing:0.1em; color:#555555;">REAL-TIME VERIFICATION WORKSPACE</div>
-        <div class="system-ticker">Consensus Acc: 92.06% ▲</div>
-    </div>
-    
-    <div class="nyt-masthead">
-        <h1 class="nyt-logo">The TruthGuard Times</h1>
-        <p class="nyt-tagline">"All the News That's Fit to Verify - Ensemble Neural Classification Pipeline"</p>
-    </div>
-</header>
-""", unsafe_allow_html=True)
+st.markdown(f"""<header class="nyt-header">
+<div class="nyt-top-bar">
+<div>{date_str}</div>
+<div style="letter-spacing:0.1em; color:#555555;">REAL-TIME VERIFICATION WORKSPACE</div>
+<div class="system-ticker">Consensus Acc: 92.06% ▲</div>
+</div>
+<div class="nyt-masthead">
+<h1 class="nyt-logo">The TruthGuard Times</h1>
+<p class="nyt-tagline">"All the News That's Fit to Verify - Ensemble Neural Classification Pipeline"</p>
+</div>
+</header>""", unsafe_allow_html=True)
 
 # Custom dynamic tab buttons row (Newspaper Links styled)
 st.markdown("<div class='nyt-nav-wrapper'>", unsafe_allow_html=True)
@@ -807,27 +828,23 @@ if st.session_state.current_tab == "Front Page":
     with col_right:
         st.markdown('<span class="section-badge">Analytics Graphics</span>', unsafe_allow_html=True)
         
-        st.markdown("""
-        <div class="illustration-card">
+        # Accuracies Frame
+        st.markdown("""<div class="illustration-card">
             <h4>Model Accuracies</h4>
-            <div class="illustration-frame">
-                <img src="app/static/model_accuracy_comparison.png" alt="Accuracies Graph">
-            </div>
-            <p class="illustration-caption">
-                Figure 1. Comparison of validation set accuracies across evaluated classifiers. Neural Net leads pipeline performance.
-            </p>
-        </div>
+        </div>""", unsafe_allow_html=True)
+        st.image("static/model_accuracy_comparison.png", use_container_width=True)
+        st.markdown("""<p class="illustration-caption" style="margin-top:-0.5rem; margin-bottom:1.5rem;">
+            Figure 1. Comparison of validation set accuracies across evaluated classifiers. Neural Net leads pipeline performance.
+        </p>""", unsafe_allow_html=True)
         
-        <div class="illustration-card">
+        # Confusion Matrices Frame
+        st.markdown("""<div class="illustration-card">
             <h4>Confusion Matrices</h4>
-            <div class="illustration-frame">
-                <img src="app/static/confusion_matrices.png" alt="Confusion Matrix Graph">
-            </div>
-            <p class="illustration-caption">
-                Figure 2. Precision-Recall balances computed during validation cycles. Indicates low margin-errors.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+        </div>""", unsafe_allow_html=True)
+        st.image("static/confusion_matrices.png", use_container_width=True)
+        st.markdown("""<p class="illustration-caption" style="margin-top:-0.5rem; margin-bottom:1.5rem;">
+            Figure 2. Precision-Recall balances computed during validation cycles. Indicates low margin-errors.
+        </p>""", unsafe_allow_html=True)
 
 # ------------------ 4. ANALYTICS DESK TAB PANEL ------------------
 elif st.session_state.current_tab == "Analytics Desk":
@@ -838,52 +855,46 @@ elif st.session_state.current_tab == "Analytics Desk":
     col_plot1, col_plot2 = st.columns(2)
     
     with col_plot1:
-        st.markdown("""
-        <div class="illustration-card">
+        st.markdown("""<div class="illustration-card">
             <h4 style="font-size: 1.1rem; margin-bottom: 0.8rem;">Model Accuracy Comparison</h4>
-            <div style="text-align: center;"><img src="app/static/model_accuracy_comparison.png" style="max-width: 100%; height: auto; border: 1px solid #f0eee8;"></div>
-            <p class="illustration-caption" style="font-size:0.75rem; border-top:1px dashed #d1cfcb; padding-top:0.5rem; margin-top:0.8rem;">
-                Comparison scores across standard metrics. High-dimensional vectors are evaluated using four key paradigms: KNN, Logistic Regression, Random Forest ensembles, and MLP Neural Networks.
-            </p>
-        </div>
+        </div>""", unsafe_allow_html=True)
+        st.image("static/model_accuracy_comparison.png", use_container_width=True)
+        st.markdown("""<p class="illustration-caption" style="font-size:0.75rem; border-top:1px dashed #d1cfcb; padding-top:0.5rem; margin-top:0.5rem; margin-bottom:1.5rem;">
+            Comparison scores across standard metrics. High-dimensional vectors are evaluated using four key paradigms: KNN, Logistic Regression, Random Forest ensembles, and MLP Neural Networks.
+        </p>""", unsafe_allow_html=True)
         
-        <div class="illustration-card">
+        st.markdown("""<div class="illustration-card">
             <h4 style="font-size: 1.1rem; margin-bottom: 0.8rem;">Dataset Label Distribution</h4>
-            <div style="text-align: center;"><img src="app/static/label_distribution.png" style="max-width: 100%; height: auto; border: 1px solid #f0eee8;"></div>
-            <p class="illustration-caption" style="font-size:0.75rem; border-top:1px dashed #d1cfcb; padding-top:0.5rem; margin-top:0.8rem;">
-                Proportional labels inside the training corpus. Confirms a balanced dataset structure, preventing classifier bias.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+        </div>""", unsafe_allow_html=True)
+        st.image("static/label_distribution.png", use_container_width=True)
+        st.markdown("""<p class="illustration-caption" style="font-size:0.75rem; border-top:1px dashed #d1cfcb; padding-top:0.5rem; margin-top:0.5rem; margin-bottom:1.5rem;">
+            Proportional labels inside the training corpus. Confirms a balanced dataset structure, preventing classifier bias.
+        </p>""", unsafe_allow_html=True)
         
     with col_plot2:
-        st.markdown("""
-        <div class="illustration-card">
+        st.markdown("""<div class="illustration-card">
             <h4 style="font-size: 1.1rem; margin-bottom: 0.8rem;">Confusion Matrices</h4>
-            <div style="text-align: center;"><img src="app/static/confusion_matrices.png" style="max-width: 100%; height: auto; border: 1px solid #f0eee8;"></div>
-            <p class="illustration-caption" style="font-size:0.75rem; border-top:1px dashed #d1cfcb; padding-top:0.5rem; margin-top:0.8rem;">
-                Precision distributions across Fake and Real classifications. Diagonal coefficients represent correct predictions, verifying classifier robustness.
-            </p>
-        </div>
+        </div>""", unsafe_allow_html=True)
+        st.image("static/confusion_matrices.png", use_container_width=True)
+        st.markdown("""<p class="illustration-caption" style="font-size:0.75rem; border-top:1px dashed #d1cfcb; padding-top:0.5rem; margin-top:0.5rem; margin-bottom:1.5rem;">
+            Precision distributions across Fake and Real classifications. Diagonal coefficients represent correct predictions, verifying classifier robustness.
+        </p>""", unsafe_allow_html=True)
         
-        <div class="illustration-card">
+        st.markdown("""<div class="illustration-card">
             <h4 style="font-size: 1.1rem; margin-bottom: 0.8rem;">Article Length Distribution</h4>
-            <div style="text-align: center;"><img src="app/static/article_length_distribution.png" style="max-width: 100%; height: auto; border: 1px solid #f0eee8;"></div>
-            <p class="illustration-caption" style="font-size:0.75rem; border-top:1px dashed #d1cfcb; padding-top:0.5rem; margin-top:0.8rem;">
-                Detailed distribution curve of token word counts across historical article records in standard corpora.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+        </div>""", unsafe_allow_html=True)
+        st.image("static/article_length_distribution.png", use_container_width=True)
+        st.markdown("""<p class="illustration-caption" style="font-size:0.75rem; border-top:1px dashed #d1cfcb; padding-top:0.5rem; margin-top:0.5rem; margin-bottom:1.5rem;">
+            Detailed distribution curve of token word counts across historical article records in standard corpora.
+        </p>""", unsafe_allow_html=True)
         
-    st.markdown("""
-    <div class="illustration-card" style="width: 100%;">
+    st.markdown("""<div class="illustration-card" style="width: 100%;">
         <h4 style="font-size: 1.1rem; margin-bottom: 0.8rem;">Most Common Words in Articles</h4>
-        <div style="text-align: center;"><img src="app/static/most_common_words.png" style="max-width: 100%; max-height: 450px; object-fit: contain; border: 1px solid #f0eee8;"></div>
-        <p class="illustration-caption" style="font-size:0.75rem; border-top:1px dashed #d1cfcb; padding-top:0.5rem; margin-top:0.8rem;">
-            Vocabulary frequency weights after custom tokenization and stopword removal cycles. Reflects prominent semantic dimensions.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    </div>""", unsafe_allow_html=True)
+    st.image("static/most_common_words.png", use_container_width=True)
+    st.markdown("""<p class="illustration-caption" style="font-size:0.75rem; border-top:1px dashed #d1cfcb; padding-top:0.5rem; margin-top:0.5rem;">
+        Vocabulary frequency weights after custom tokenization and stopword removal cycles. Reflects prominent semantic dimensions.
+    </p>""", unsafe_allow_html=True)
 
 # ------------------ 5. CLASSIFIEDS BANK TAB PANEL ------------------
 elif st.session_state.current_tab == "Classifieds Bank":
