@@ -566,10 +566,11 @@ st.markdown("""
     }
 
     /* Clean layout spacing & full width container settings */
-    div.block-container {
+    div[data-testid="stAppViewBlockContainer"], .block-container {
         padding-top: 1.5rem !important;
         padding-bottom: 2rem !important;
-        max-width: 1350px !important;
+        max-width: 90% !important;
+        width: 90% !important;
     }
 
     /* Vertical line dividers between newspaper layout columns */
