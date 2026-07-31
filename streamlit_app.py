@@ -223,6 +223,30 @@ st.markdown("""
         border-bottom-color: #333333 !important;
     }
     
+    /* Sign Out navigation button styling override (6th column of navigation columns block) */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(6) div[data-testid="stButton"] button {
+        color: #8c1d1d !important;
+        border: 1px solid #8c1d1d !important;
+        padding: 0.25rem 0.6rem !important;
+        background: transparent !important;
+        border-radius: 0px !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.7rem !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        width: auto !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-bottom: 1px solid #8c1d1d !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(6) div[data-testid="stButton"] button:hover {
+        background-color: #8c1d1d !important;
+        color: #ffffff !important;
+        border-bottom-color: #8c1d1d !important;
+    }
+    
     /* Vintage credentials access pass screen styles */
     .login-card-container {
         display: flex;
@@ -819,26 +843,38 @@ if "logout" in query_params:
     st.query_params.clear()
     st.rerun()
 
-if "tab" in query_params:
-    st.session_state.current_tab = query_params["tab"]
+# Double-Line Top Navigation Divider
+st.markdown("<hr style='border: none; border-top: 3px double #121212; margin: 0.8rem 0 0.2rem 0;'>", unsafe_allow_html=True)
 
-current_tab = st.session_state.current_tab
+# Spaced columns to replicate margin-left auto pushing sign out button to the right
+nav_cols = st.columns([1.1, 1.3, 1.3, 1.4, 3.7, 1.2])
 
-# Render the beautiful double-bordered horizontal navigation link bar
-t_front = "active" if current_tab == "Front Page" else ""
-t_analytics = "active" if current_tab == "Analytics Desk" else ""
-t_classifieds = "active" if current_tab == "Classifieds Bank" else ""
-t_profiler = "active" if current_tab == "Live Text Profiler" else ""
+# Set labels with dot indicating active state
+front_label = "Front Page •" if st.session_state.current_tab == "Front Page" else "Front Page"
+analytics_label = "Analytics Desk •" if st.session_state.current_tab == "Analytics Desk" else "Analytics Desk"
+classifieds_label = "Classifieds Bank •" if st.session_state.current_tab == "Classifieds Bank" else "Classifieds Bank"
+profiler_label = "Live Text Profiler •" if st.session_state.current_tab == "Live Text Profiler" else "Live Text Profiler"
 
-st.markdown(f"""<div class="nyt-nav-wrapper">
-    <ul class="nav-menu">
-        <li><a class="nav-item {t_front}" href="?tab=Front+Page" target="_self">Front Page</a></li>
-        <li><a class="nav-item {t_analytics}" href="?tab=Analytics+Desk" target="_self">Analytics Desk</a></li>
-        <li><a class="nav-item {t_classifieds}" href="?tab=Classifieds+Bank" target="_self">Classifieds Bank</a></li>
-        <li><a class="nav-item {t_profiler}" href="?tab=Live+Text+Profiler" target="_self">Live Text Profiler</a></li>
-        <li class="nav-item-right"><a href="?logout=true" class="logout-btn" target="_self">Sign Out</a></li>
-    </ul>
-</div>""", unsafe_allow_html=True)
+if nav_cols[0].button(front_label, key="nav_front"):
+    st.session_state.current_tab = "Front Page"
+    st.rerun()
+if nav_cols[1].button(analytics_label, key="nav_analytics"):
+    st.session_state.current_tab = "Analytics Desk"
+    st.rerun()
+if nav_cols[2].button(classifieds_label, key="nav_classifieds"):
+    st.session_state.current_tab = "Classifieds Bank"
+    st.rerun()
+if nav_cols[3].button(profiler_label, key="nav_profiler"):
+    st.session_state.current_tab = "Live Text Profiler"
+    st.rerun()
+if nav_cols[5].button("Sign Out", key="nav_logout", help="Sign out current analyst clearance session"):
+    st.session_state.authenticated = False
+    st.session_state.last_analysis_results = None
+    st.session_state.draft_text_input = ""
+    st.rerun()
+
+# Double-Line Bottom Navigation Divider
+st.markdown("<hr style='border: none; border-top: 3px double #121212; margin: 0.2rem 0 1.8rem 0;'>", unsafe_allow_html=True)
 
 # Loading classification core models
 vectorizer, models = load_classification_resources()
