@@ -171,30 +171,56 @@ st.markdown("""
         color: #121212 !important;
     }
 
-    /* Redefine button elements to look like horizontal text links */
+    /* Default button style: text link style */
     div[data-testid="stButton"] button {
         background-color: transparent !important;
         border: none !important;
+        border-bottom: 1px solid #121212 !important;
+        color: #121212 !important;
+        padding: 0.15rem 0 !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.7rem !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.08em !important;
         border-radius: 0px !important;
-        color: #555555 !important;
+        width: auto !important;
+        display: inline-block !important;
+        transition: all 0.2s ease !important;
+    }
+    div[data-testid="stButton"] button:hover {
+        color: #8c1d1d !important;
+        border-bottom-color: #8c1d1d !important;
+        background: transparent !important;
+    }
+    div[data-testid="stButton"] button:active, div[data-testid="stButton"] button:focus {
+        box-shadow: none !important;
+        background: transparent !important;
+    }
+
+    /* Center Column Execute Button override */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) div[data-testid="stButton"] button {
+        background-color: #1d1c1a !important;
+        color: #ffffff !important;
+        border: 1px solid #1d1c1a !important;
+        border-radius: 0px !important;
         font-family: 'Inter', sans-serif !important;
         font-size: 0.85rem !important;
         font-weight: 800 !important;
         text-transform: uppercase !important;
-        letter-spacing: 0.1em !important;
-        padding: 0.3rem 0.5rem !important;
-        transition: all 0.2s ease !important;
+        letter-spacing: 0.12em !important;
+        padding: 0.8rem 1.5rem !important;
+        width: 100% !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-bottom: 1px solid #1d1c1a !important;
     }
-    
-    div[data-testid="stButton"] button:hover {
-        color: #121212 !important;
-        background-color: #eae7e2 !important;
-    }
-
-    div[data-testid="stButton"] button:active, div[data-testid="stButton"] button:focus {
-        color: #121212 !important;
-        background-color: #eae7e2 !important;
-        box-shadow: none !important;
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) div[data-testid="stButton"] button:hover {
+        background-color: #333333 !important;
+        border-color: #333333 !important;
+        color: #ffffff !important;
+        border-bottom-color: #333333 !important;
     }
     
     /* Vintage credentials access pass screen styles */
@@ -539,9 +565,62 @@ st.markdown("""
         margin-bottom: 0.8rem;
     }
 
-    /* Override input margins inside streamlit columns */
-    div[data-testid="column"] {
-        padding: 0px 5px !important;
+    /* Clean layout spacing & full width container settings */
+    div.block-container {
+        padding-top: 1.5rem !important;
+        padding-bottom: 2rem !important;
+        max-width: 1350px !important;
+    }
+
+    /* Vertical line dividers between newspaper layout columns */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
+        border-right: 1px solid #d1cfcb !important;
+        padding-right: 25px !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
+        border-right: 1px solid #d1cfcb !important;
+        padding-right: 25px !important;
+        padding-left: 25px !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(3) {
+        padding-left: 25px !important;
+    }
+
+    /* Double bordered navigation horizontal link bar */
+    .nyt-nav-wrapper {
+        border-top: 3px double #121212 !important;
+        border-bottom: 3px double #121212 !important;
+        margin: 0.8rem 0 1.8rem 0 !important;
+        padding: 0.4rem 0 !important;
+        width: 100% !important;
+        text-align: center !important;
+        display: flex !important;
+        justify-content: center !important;
+        gap: 2.5rem !important;
+    }
+    .nav-link {
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.85rem !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.1em !important;
+        color: #555555 !important;
+        text-decoration: none !important;
+        transition: color 0.2s ease !important;
+    }
+    .nav-link:hover, .nav-link.active {
+        color: #121212 !important;
+    }
+
+    /* Textarea label formatting override */
+    div[data-testid="stTextArea"] label p {
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.75rem !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        color: #555555 !important;
+        margin-bottom: 0.5rem !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -682,26 +761,34 @@ st.markdown(f"""<header class="nyt-header">
 </div>
 </header>""", unsafe_allow_html=True)
 
-# Custom dynamic tab buttons row (Newspaper Links styled)
-st.markdown("<div class='nyt-nav-wrapper'>", unsafe_allow_html=True)
-nav_cols = st.columns([1, 1, 1, 1.2, 3])
-
-if nav_cols[0].button("Front Page"):
-    st.session_state.current_tab = "Front Page"
-if nav_cols[1].button("Analytics Desk"):
-    st.session_state.current_tab = "Analytics Desk"
-if nav_cols[2].button("Classifieds Bank"):
-    st.session_state.current_tab = "Classifieds Bank"
-if nav_cols[3].button("Live Text Profiler"):
-    st.session_state.current_tab = "Live Text Profiler"
-if nav_cols[4].button("Sign Out", help="Sign out current analyst clearance session"):
+# Manage URL params for navigation
+query_params = st.query_params
+if "logout" in query_params:
     st.session_state.authenticated = False
     st.session_state.current_tab = "Front Page"
     st.session_state.last_analysis_results = None
     st.session_state.draft_text_input = ""
+    st.query_params.clear()
     st.rerun()
 
-st.markdown("</div>", unsafe_allow_html=True)
+if "tab" in query_params:
+    st.session_state.current_tab = query_params["tab"]
+
+current_tab = st.session_state.current_tab
+
+# Render the beautiful double-bordered horizontal navigation link bar
+t_front = "active" if current_tab == "Front Page" else ""
+t_analytics = "active" if current_tab == "Analytics Desk" else ""
+t_classifieds = "active" if current_tab == "Classifieds Bank" else ""
+t_profiler = "active" if current_tab == "Live Text Profiler" else ""
+
+st.markdown(f"""<div class="nyt-nav-wrapper">
+    <a class="nav-link {t_front}" href="?tab=Front+Page" target="_self">Front Page</a>
+    <a class="nav-link {t_analytics}" href="?tab=Analytics+Desk" target="_self">Analytics Desk</a>
+    <a class="nav-link {t_classifieds}" href="?tab=Classifieds+Bank" target="_self">Classifieds Bank</a>
+    <a class="nav-link {t_profiler}" href="?tab=Live+Text+Profiler" target="_self">Live Text Profiler</a>
+    <a class="nav-link" href="?logout=true" target="_self">Sign Out</a>
+</div>""", unsafe_allow_html=True)
 
 # Loading classification core models
 vectorizer, models = load_classification_resources()
