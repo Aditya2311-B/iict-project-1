@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The TruthGuard Times - Automated News Credibility System</title>
+    <!-- Premium Google Fonts for Editorial Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Lora:ital,wght@0,400..700;1,400..700&family=UnifrakturMaguntia&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js for Real-Time Analytics Graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #faf9f6;          /* Elegant Warm Newsprint White */
+            --text-main: #121212;         /* Charcoal Black Ink */
+            --text-muted: #555555;        /* Soft Charcoal for captions */
+            --border-color: #d1cfcb;      /* Vintage Grey Border */
+            --primary: #121212;           /* Classic Newspaper Black */
+            --accent-red: #8c1d1d;        /* Deep Burgundy for Fake News / Warnings */
+            --accent-green: #116b3d;      /* Forest Green for Real News */
+            
+            --font-gothic: 'UnifrakturMaguntia', Georgia, serif;
+            --font-serif: 'Playfair Display', Georgia, serif;
+            --font-body: 'Lora', Georgia, serif;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ------------------ VINTAGE PRESS PASS LOGIN ------------------ */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background-color: #eae7e2;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0,0,0,0.03) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(140,29,29,0.02) 0%, transparent 40%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            transition: all 0.5s ease;
+        }
+
+        .login-card {
+            background: var(--bg-color);
+            border: 2px solid #222;
+            box-shadow: 12px 12px 0px #222;
+            width: 100%;
+            max-width: 445px;
+            padding: 2.5rem 2rem;
+            position: relative;
+            font-family: var(--font-sans);
+            animation: cardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes cardEntrance {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Newspaper Press Pass Header badge */
+        .press-header {
+            border-bottom: 2px solid #222;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .press-badge {
+            background: #222;
+            color: var(--bg-color);
+            display: inline-block;
+            font-weight: 900;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            padding: 0.3rem 1.2rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .press-title {
+            font-family: var(--font-gothic);
+            font-size: 2.2rem;
+            font-weight: normal;
+            color: var(--text-main);
+            margin: 0.2rem 0;
+        }
+
+        .press-subtitle {
+            font-family: var(--font-serif);
+            font-size: 0.85rem;
+            font-style: italic;
+            color: var(--text-muted);
+        }
+
+        .press-stamp {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 80px;
+            height: 80px;
+            border: 3px dashed var(--accent-red);
+            border-radius: 50%;
+            color: var(--accent-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transform: rotate(15deg);
+            opacity: 0.8;
+            pointer-events: none;
+            user-select: none;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-main);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: #fbfbf9;
+            border: 1px solid var(--border-color);
+            border-radius: 0;
+            padding: 0.8rem 1rem;
+            color: var(--text-main);
+            font-family: monospace;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--text-main);
+            background: #ffffff;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .login-btn {
+            background: #222;
+            color: var(--bg-color);
+            border: 1px solid #222;
+            width: 100%;
+            padding: 0.9rem;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 0.8rem;
+        }
+
+        .login-btn:hover {
+            background: var(--bg-color);
+            color: #222;
+        }
+
+        .error-message {
+            color: var(--accent-red);
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-top: 1rem;
+            border: 1px solid var(--accent-red);
+            padding: 0.6rem;
+            background: rgba(140,29,29,0.05);
+            display: none;
+        }
+
+        /* ------------------ MAIN EDITORIAL LAYOUT ------------------ */
+        .dashboard-container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Editorial Header Board */
+        .nyt-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Small Top Info Bar */
+        .nyt-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid var(--text-main);
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .system-ticker {
+            color: var(--accent-red);
+        }
+
+        /* Masthead Main Title */
+        .nyt-masthead {
+            text-align: center;
+            padding: 1rem 0 0.8rem 0;
+            width: 100%;
+        }
+
+        .nyt-logo {
+            font-family: var(--font-serif);
+            font-size: 4.8rem;
+            line-height: 0.95;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+            user-select: none;
+        }
+
+        .nyt-tagline {
+            font-family: var(--font-serif);
+            font-size: 0.85rem;
+            font-style: italic;
+            margin-top: 0.6rem;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+        }
+
+        /* Double-Line Top / Bottom Navigation Bar */
+        .nyt-nav-wrapper {
+            width: 100%;
+            border-top: 3px double var(--text-main);
+            border-bottom: 3px double var(--text-main);
+            margin: 0.4rem 0 1.8rem 0;
+            padding: 0.2rem 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            justify-content: center;
+            align-items: center;
+            gap: 2.2rem;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .nav-item {
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.4rem 0.2rem;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--text-main);
+        }
+
+        /* Small visual dot for active section */
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -0.1rem;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--text-main);
+        }
+
+        .nav-item-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+            padding: 0.25rem 0.6rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: var(--accent-red);
+            color: #ffffff;
+        }
+
+        /* Main Workspace Panels */
+        .main-content {
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: panelFadeIn 0.4s ease forwards;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes panelFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Column Grid System for Front Page */
+        .editorial-grid {
+            display: grid;
+            grid-template-columns: 270px 1fr 310px;
+            gap: 1.8rem;
+            width: 100%;
+        }
+
+        .col-left {
+            border-right: 1px solid var(--border-color);
+            padding-right: 1.5rem;
+        }
+
+        .col-center {
+            padding: 0 0.5rem;
+        }
+
+        .col-right {
+            border-left: 1px solid var(--border-color);
+            padding-left: 1.5rem;
+        }
+
+        /* Section Typography */
+        .section-badge {
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--text-main);
+            padding-bottom: 0.25rem;
+            margin-bottom: 0.8rem;
+            display: block;
+            color: var(--text-main);
+        }
+
+        /* ------------------ FRONT PAGE (T1) ------------------ */
+
+        /* Center Column Editorial Main Story */
+        .headline-main {
+            font-family: var(--font-serif);
+            font-size: 2.3rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.6rem;
+            color: var(--text-main);
+            text-transform: capitalize;
+        }
+
+        .editorial-byline {
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        /* Textarea Editor Box */
+        .drafting-desk {
+            background: #ffffff;
+            border: 1px solid #c2beb6;
+            padding: 1.2rem;
+            width: 100%;
+            height: 250px;
+            font-family: var(--font-body);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--text-main);
+            resize: vertical;
+            outline: none;
+            margin-bottom: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .drafting-desk:focus {
+            border-color: var(--text-main);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        /* Action Buttons */
+        .press-stamp-btn {
+            background: var(--text-main);
+            color: var(--bg-color);
+            border: 2px solid var(--text-main);
+            width: 100%;
+            padding: 0.9rem 1.5rem;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+
+        .press-stamp-btn:hover {
+            background: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        /* Spinner */
+        .news-spinner {
+            text-align: center;
+            padding: 2rem 0;
+            border: 1px dashed var(--border-color);
+            margin-top: 1rem;
+            background: #ffffff;
+        }
+
+        .spinning-press {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(0,0,0,0.08);
+            border-top-color: var(--text-main);
+            border-radius: 50%;
+            margin: 0 auto 0.8rem;
+            animation: spinRotate 0.8s linear infinite;
+        }
+
+        @keyframes spinRotate {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-text {
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        /* Result Panel styled as an Editorial Verdict Extra Edition */
+        .results-panel {
+            display: none;
+            margin-top: 1.5rem;
+            border-top: 2px solid var(--text-main);
+            padding-top: 1.2rem;
+        }
+
+        .consensus-banner {
+            border: 3px double var(--text-main);
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .consensus-banner.fake {
+            border-color: var(--accent-red);
+            background-color: #fdf5f5;
+        }
+
+        .consensus-banner.real {
+            border-color: var(--accent-green);
+            background-color: #f5fdf7;
+        }
+
+        .consensus-label {
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .consensus-title {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+        }
+
+        .consensus-banner.fake .consensus-title { color: var(--accent-red); }
+        .consensus-banner.real .consensus-title { color: var(--accent-green); }
+
+        .consensus-conf {
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-main);
+        }
+
+        .sub-header-verdict {
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3rem;
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .model-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+        }
+
+        .model-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+
+        .model-title {
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .verdict-badge {
+            font-family: var(--font-sans);
+            font-size: 0.65rem;
+            font-weight: 900;
+            padding: 0.15rem 0.5rem;
+            border: 1px solid var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .verdict-badge.fake {
+            background-color: #fdf5f5;
+            color: var(--accent-red);
+            border-color: var(--accent-red);
+        }
+
+        .verdict-badge.real {
+            background-color: #f5fdf7;
+            color: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        .meter-container {
+            margin-bottom: 0.4rem;
+        }
+
+        .meter-labels {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0.2rem;
+        }
+
+        .meter-bar {
+            height: 6px;
+            background: #eeeae4;
+            overflow: hidden;
+        }
+
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .meter-fill.fake { background-color: var(--accent-red); }
+        .meter-fill.real { background-color: var(--accent-green); }
+
+        .model-split {
+            font-family: var(--font-sans);
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        /* ------------------ LEFT COLUMN SAMPLE BANK (T1) ------------------ */
+        .sample-story-box {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .sidebar-story {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-story:last-child {
+            border-bottom: none;
+        }
+
+        .story-meta {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .badge-category {
+            font-family: var(--font-sans);
+            font-size: 0.6rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent-red);
+        }
+
+        .badge-category.science-tag { color: var(--accent-green); }
+        .badge-category.tech-tag { color: #2251a3; }
+        .badge-category.economy-tag { color: #802f8a; }
+
+        .story-bulletin-label {
+            font-family: var(--font-sans);
+            font-size: 0.55rem;
+            font-weight: 700;
+            background: #eae7e2;
+            padding: 0.1rem 0.3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .sidebar-headline {
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            font-weight: 800;
+            line-height: 1.2;
+            color: var(--text-main);
+        }
+
+        .sidebar-summary {
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: var(--text-muted);
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .sidebar-load-btn {
+            align-self: flex-start;
+            background: none;
+            border: none;
+            border-bottom: 1px solid var(--text-main);
+            font-family: var(--font-sans);
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding-bottom: 0.1rem;
+            cursor: pointer;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+            margin-top: 0.2rem;
+        }
+
+        .sidebar-load-btn:hover {
+            color: var(--accent-red);
+            border-bottom-color: var(--accent-red);
+        }
+
+        /* ------------------ RIGHT COLUMN PLOTS & GRAPHICS (T1) ------------------ */
+        .nyt-illustration-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .illustration-card {
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            padding: 0.8rem;
+        }
+
+        .illustration-card h4 {
+            font-family: var(--font-serif);
+            font-size: 0.9rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3rem;
+        }
+
+        .illustration-frame {
+            background: #fbfbfa;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .illustration-frame img {
+            max-width: 100%;
+            max-height: 180px;
+            object-fit: contain;
+            filter: grayscale(1) contrast(1.05); /* Authentic Retro Newspaper Print Look */
+            transition: all 0.3s ease;
+        }
+
+        .illustration-frame img:hover {
+            filter: none;
+            cursor: zoom-in;
+            transform: scale(1.02);
+        }
+
+        .illustration-caption {
+            font-family: var(--font-sans);
+            font-size: 0.65rem;
+            line-height: 1.3;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* ------------------ DETAILED ANALYTICS TAB (T2) ------------------ */
+        .analytics-desk-container {
+            width: 100%;
+            border-top: 1px solid var(--text-main);
+            padding-top: 1.5rem;
+        }
+
+        .tab-title-block {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--text-main);
+            padding-bottom: 1rem;
+        }
+
+        .tab-title-block h2 {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -0.01em;
+            color: var(--text-main);
+            margin-bottom: 0.3rem;
+        }
+
+        .tab-title-block p {
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .analytics-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .gallery-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gallery-card h3 {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            font-weight: 800;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .gallery-card img {
+            max-width: 100%;
+            max-height: 380px;
+            object-fit: contain;
+            margin: auto;
+            border: 1px solid #f0eee8;
+            filter: grayscale(0.2) contrast(1.02);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-card img:hover {
+            filter: none;
+            transform: scale(1.01);
+            cursor: zoom-in;
+        }
+
+        .gallery-caption {
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            line-height: 1.4;
+            color: var(--text-muted);
+            margin-top: 0.8rem;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 0.5rem;
+        }
+
+        /* ------------------ CLASSIFIEDS / SAMPLE BANK TAB (T3) ------------------ */
+        .classifieds-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .classified-item {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .classified-item::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            border: 1px dashed #eae7e2;
+            pointer-events: none;
+        }
+
+        .classified-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--text-main);
+            padding-bottom: 0.4rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .classified-category {
+            font-family: var(--font-sans);
+            font-size: 0.65rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .classified-status {
+            font-family: var(--font-sans);
+            font-size: 0.55rem;
+            font-weight: 800;
+            background: var(--text-main);
+            color: var(--bg-color);
+            padding: 0.1rem 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .classified-status.fake-badge {
+            background-color: var(--accent-red);
+        }
+
+        .classified-status.real-badge {
+            background-color: var(--accent-green);
+        }
+
+        .classified-text {
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .classified-action-btn {
+            background: var(--text-main);
+            color: var(--bg-color);
+            border: 1px solid var(--text-main);
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.5rem;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .classified-action-btn:hover {
+            background: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        /* ------------------ LIVE DOCUMENT PROFILER TAB (T4) ------------------ */
+        .analytics-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2.2rem;
+            width: 100%;
+        }
+
+        .stat-table-box {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        .stat-table-box th {
+            border-bottom: 2px solid var(--text-main);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.7rem 0.6rem;
+        }
+
+        .stat-table-box td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.7rem 0.6rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Retro Press Pass Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <div class="press-stamp">TruthGuard<br>Official<br>Clearance</div>
+            
+            <div class="press-header">
+                <span class="press-badge">Press Credential Gate</span>
+                <h2 class="press-title">TruthGuard</h2>
+                <p class="press-subtitle">Secure Authentication Portal for Verification Analysts</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="username">Analyst User Name ID</label>
+                <input type="text" id="username" class="form-input" placeholder="admin" value="admin">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Security Clearance Password</label>
+                <input type="password" id="password" class="form-input" placeholder="••••••••" value="admin123">
+            </div>
+            
+            <button class="login-btn" onclick="validateLogin()">Authenticate Credential</button>
+            <div class="error-message" id="loginError">Invalid Credentials. Hints: admin / admin123</div>
+        </div>
+    </div>
+
+    <!-- 2. Main Newspaper Dashboard -->
+    <div class="dashboard-container" id="dashboardContainer">
+        
+        <header class="nyt-header">
+            <div class="nyt-top-bar">
+                <div id="currentDate">Friday, July 31, 2026</div>
+                <div style="letter-spacing:0.1em; color:var(--text-muted);">REAL-TIME VERIFICATION WORKSPACE</div>
+                <div class="system-ticker">Consensus Acc: 92.06% ▲</div>
+            </div>
+            
+            <div class="nyt-masthead">
+                <h1 class="nyt-logo">The TruthGuard Times</h1>
+                <p class="nyt-tagline">"All the News That's Fit to Verify - Ensemble Neural Classification Pipeline"</p>
+            </div>
+            
+            <div class="nyt-nav-wrapper">
+                <ul class="nav-menu">
+                    <li class="nav-item active" onclick="switchTab(this, 'detectorTab')">Front Page</li>
+                    <li class="nav-item" onclick="switchTab(this, 'visualizationsTab')">Analytics Desk</li>
+                    <li class="nav-item" onclick="switchTab(this, 'samplesTab')">Classifieds Bank</li>
+                    <li class="nav-item" onclick="switchTab(this, 'analyticsDeskTab')">Live Text Profiler</li>
+                    <li class="nav-item-right nav-item" style="cursor: default;">
+                        <span class="logout-btn" onclick="handleLogout()">Sign Out</span>
+                    </li>
+                </ul>
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <!-- SECTION T1: FRONT PAGE -->
+            <div class="tab-panel active" id="detectorTab">
+                <div class="editorial-grid">
+                    
+                    <!-- Left Column: Sample Bulletins -->
+                    <aside class="col-left">
+                        <span class="section-badge">Latest Wire Feeds</span>
+                        <div class="sample-story-box">
+                            <!-- Sidebar Sample 1 -->
+                            <article class="sidebar-story">
+                                <div class="story-meta">
+                                    <span class="badge-category">Politics</span>
+                                    <span class="story-bulletin-label">Wire 1</span>
+                                </div>
+                                <h4 class="sidebar-headline">Presidents signs Executive Order on drug pricing relief</h4>
+                                <p class="sidebar-summary" id="sample1Text">President signs historic executive order to lower prescription drug costs nationwide. The package contains guidelines for Medicare to negotiate drug rates directly, representing a major policy victory for seniors.</p>
+                                <button class="sidebar-load-btn" onclick="useSample(1)">Draft for analysis</button>
+                            </article>
+                            
+                            <!-- Sidebar Sample 2 -->
+                            <article class="sidebar-story">
+                                <div class="story-meta">
+                                    <span class="badge-category">Conspiracy</span>
+                                    <span class="story-bulletin-label">Wire 2</span>
+                                </div>
+                                <h4 class="sidebar-headline">Whistleblower exposes secret studio moon landing reels</h4>
+                                <p class="sidebar-summary" id="sample2Text">BREAKING: Secret NASA document proves Earth is flat and the moon is a hologram project by government. Whistleblowers leaked raw archives demonstrating that gravity is an illusion and space flights are recorded in studio pools.</p>
+                                <button class="sidebar-load-btn" onclick="useSample(2)">Draft for analysis</button>
+                            </article>
+
+                            <!-- Sidebar Sample 3 -->
+                            <article class="sidebar-story">
+                                <div class="story-meta">
+                                    <span class="badge-category science-tag">Science</span>
+                                    <span class="story-bulletin-label">Wire 3</span>
+                                </div>
+                                <h4 class="sidebar-headline">High school science club wins purification awards</h4>
+                                <p class="sidebar-summary" id="sample3Text">Local high school science club wins international competition with revolutionary water purification system. The team from Westlake High constructed a lightweight, solar-powered filter using organic nanomaterials.</p>
+                                <button class="sidebar-load-btn" onclick="useSample(3)">Draft for analysis</button>
+                            </article>
+
+                            <!-- Sidebar Sample 4 -->
+                            <article class="sidebar-story">
+                                <div class="story-meta">
+                                    <span class="badge-category">Conspiracy</span>
+                                    <span class="story-bulletin-label">Wire 4</span>
+                                </div>
+                                <h4 class="sidebar-headline">Archaeologists discover alien weapons inside Pyramids</h4>
+                                <p class="sidebar-summary" id="sample4Text">Alien spacecraft discovered in Giza pyramids containing high-tech laser weapons. Archaeologists scanning the pyramids uncovered hidden lead-shielded compartments housing glowing metallic components dating back 10,000 years.</p>
+                                <button class="sidebar-load-btn" onclick="useSample(4)">Draft for analysis</button>
+                            </article>
+                        </div>
+                    </aside>
+                    
+                    <!-- Center Column: Core Classifier Desk -->
+                    <section class="col-center">
+                        <span class="section-badge">Verification Desk</span>
+                        <h2 class="headline-main">Ensemble Classifier node evaluates text authenticity</h2>
+                        <div class="editorial-byline">By TruthGuard Editorial Algorithms • Automated Security Release</div>
+                        
+                        <div style="background: #ffffff; border: 1px solid var(--border-color); padding: 1.5rem; margin-bottom: 1.5rem;">
+                            <p style="font-family: var(--font-sans); font-size: 0.8rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 0.8rem;">
+                                Copy and Paste Draft Text Copy Below
+                            </p>
+                            <textarea id="newsText" class="drafting-desk" placeholder="Paste the body text or headline of a news article here to run classification..."></textarea>
+                            
+                            <button class="press-stamp-btn" id="analyzeBtn" onclick="analyzeNews()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                Execute Automated Verification
+                            </button>
+                            
+                            <!-- Spinner -->
+                            <div class="news-spinner" id="loading" style="display:none;">
+                                <div class="spinning-press"></div>
+                                <p class="spinner-text">Extracting TF-IDF Vectors & running Neural Networks...</p>
+                            </div>
+                        </div>
+
+                        <!-- Analysis Results Output Panel -->
+                        <div class="results-panel" id="resultsPanel">
+                            <!-- Consensus Verdict Banner -->
+                            <div class="consensus-banner" id="consensusBanner">
+                                <div class="consensus-label">Aggregated Consensus Verdict</div>
+                                <h3 class="consensus-title" id="consensusVerdict">FAKE NEWS DETECTED</h3>
+                                <div class="consensus-conf" id="consensusConfidence">Average Confidence: 94.2%</div>
+                            </div>
+
+                            <h3 class="sub-header-verdict">Ensemble Classifier Sub-Reports</h3>
+                            <div class="models-grid">
+                                <!-- KNN Model Output Card -->
+                                <div class="model-card">
+                                    <div class="model-card-header">
+                                        <span class="model-title">KNN Classifier <span style="font-size:0.65rem; color:var(--text-muted); font-weight:normal">(Acc: 85.79%)</span></span>
+                                        <span class="verdict-badge" id="knnVerdict">FAKE</span>
+                                    </div>
+                                    <div class="meter-container">
+                                        <div class="meter-labels">
+                                            <span>Confidence</span>
+                                            <span id="knnConfidence">85.0%</span>
+                                        </div>
+                                        <div class="meter-bar">
+                                            <div class="meter-fill" id="knnBar"></div>
+                                        </div>
+                                    </div>
+                                    <div class="model-split" id="knnSplit">Real: 15% | Fake: 85%</div>
+                                </div>
+
+                                <!-- Logistic Regression Model Output Card -->
+                                <div class="model-card">
+                                    <div class="model-card-header">
+                                        <span class="model-title">Logistic Reg. <span style="font-size:0.65rem; color:var(--text-muted); font-weight:normal">(Acc: 90.79%)</span></span>
+                                        <span class="verdict-badge" id="logregVerdict">FAKE</span>
+                                    </div>
+                                    <div class="meter-container">
+                                        <div class="meter-labels">
+                                            <span>Confidence</span>
+                                            <span id="logregConfidence">90.8%</span>
+                                        </div>
+                                        <div class="meter-bar">
+                                            <div class="meter-fill" id="logregBar"></div>
+                                        </div>
+                                    </div>
+                                    <div class="model-split" id="logregSplit">Real: 9.2% | Fake: 90.8%</div>
+                                </div>
+
+                                <!-- Random Forest Model Output Card -->
+                                <div class="model-card">
+                                    <div class="model-card-header">
+                                        <span class="model-title">Random Forest <span style="font-size:0.65rem; color:var(--text-muted); font-weight:normal">(Acc: 90.40%)</span></span>
+                                        <span class="verdict-badge" id="rfVerdict">FAKE</span>
+                                    </div>
+                                    <div class="meter-container">
+                                        <div class="meter-labels">
+                                            <span>Confidence</span>
+                                            <span id="rfConfidence">95.0%</span>
+                                        </div>
+                                        <div class="meter-bar">
+                                            <div class="meter-fill" id="rfBar"></div>
+                                        </div>
+                                    </div>
+                                    <div class="model-split" id="rfSplit">Real: 5% | Fake: 95%</div>
+                                </div>
+
+                                <!-- Neural Net Model Output Card -->
+                                <div class="model-card">
+                                    <div class="model-card-header">
+                                        <span class="model-title">MLP Neural Net <span style="font-size:0.65rem; color:var(--text-muted); font-weight:normal">(Acc: 92.06%)</span></span>
+                                        <span class="verdict-badge" id="nnVerdict">FAKE</span>
+                                    </div>
+                                    <div class="meter-container">
+                                        <div class="meter-labels">
+                                            <span>Confidence</span>
+                                            <span id="nnConfidence">99.9%</span>
+                                        </div>
+                                        <div class="meter-bar">
+                                            <div class="meter-fill" id="nnBar"></div>
+                                        </div>
+                                    </div>
+                                    <div class="model-split" id="nnSplit">Real: 0.1% | Fake: 99.9%</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Redirection to Real-Time Profiler tab -->
+                            <div style="text-align: center; margin-top: 1.5rem; padding: 1.2rem; border: 1px solid var(--border-color); background: #ffffff;">
+                                <p style="font-family: var(--font-serif); font-size: 0.95rem; font-style: italic; margin-bottom: 0.5rem; color: var(--text-main);">
+                                    Linguistic structural profiling & model probabilities are computed.
+                                </p>
+                                <button class="sidebar-load-btn" onclick="goToAnalyticsDesk()" style="font-size: 0.75rem; border-bottom: 1.5px solid var(--text-main); font-weight: 800;">
+                                    View Live Text Profiler Desk →
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Right Column: Visualizations & Graphics -->
+                    <aside class="col-right">
+                        <span class="section-badge">Analytics Graphics</span>
+                        <div class="nyt-illustration-container">
+                            
+                            <div class="illustration-card">
+                                <h4>Model Accuracies</h4>
+                                <div class="illustration-frame">
+                                    <img src="/static/model_accuracy_comparison.png" alt="Accuracies Graph">
+                                </div>
+                                <p class="illustration-caption">
+                                    Figure 1. Comparison of validation set accuracies across evaluated classifiers. Neural Net leads pipeline performance.
+                                </p>
+                            </div>
+
+                            <div class="illustration-card">
+                                <h4>Confusion Matrices</h4>
+                                <div class="illustration-frame">
+                                    <img src="/static/confusion_matrices.png" alt="Confusion Matrix Graph">
+                                </div>
+                                <p class="illustration-caption">
+                                    Figure 2. Precision-Recall balances computed during validation cycles. Indicates low margin-errors.
+                                </p>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+
+            <!-- SECTION T2: DETAILED ANALYTICS GRID -->
+            <div class="tab-panel" id="visualizationsTab">
+                <div class="analytics-desk-container">
+                    <div class="tab-title-block">
+                        <h2>Exploratory Analytics & Pipeline Statistics</h2>
+                        <p>Scientific plots computed during the preprocessing, tokenization, training, and evaluations stage</p>
+                    </div>
+
+                    <div class="analytics-gallery-grid">
+                        <div class="gallery-card">
+                            <h3>Model Accuracy Comparison</h3>
+                            <img src="/static/model_accuracy_comparison.png" alt="Model Accuracies">
+                            <p class="gallery-caption">Comparison scores across standard metrics. High-dimensional vectors are evaluated using four key paradigms: KNN, Logistic Regression, Random Forest ensembles, and MLP Neural Networks.</p>
+                        </div>
+                        <div class="gallery-card">
+                            <h3>Confusion Matrices</h3>
+                            <img src="/static/confusion_matrices.png" alt="Confusion Matrices">
+                            <p class="gallery-caption">Precision distributions across Fake and Real classifications. Diagonal coefficients represent correct predictions, verifying classifier robustness.</p>
+                        </div>
+                        <div class="gallery-card">
+                            <h3>Dataset Label Distribution</h3>
+                            <img src="/static/label_distribution.png" alt="Label Distribution">
+                            <p class="gallery-caption">Proportional labels inside the training corpus. Confirms a balanced dataset structure, preventing classifier bias.</p>
+                        </div>
+                        <div class="gallery-card">
+                            <h3>Article Length Distribution</h3>
+                            <img src="/static/article_length_distribution.png" alt="Article Lengths">
+                            <p class="gallery-caption">Detailed distribution curve of token word counts across historical article records in standard corpora.</p>
+                        </div>
+                        <div class="gallery-card" style="grid-column: span 2;">
+                            <h3>Most Common Words in Articles</h3>
+                            <img src="/static/most_common_words.png" alt="Common Words" style="max-height: 450px; width:100%; object-fit: contain;">
+                            <p class="gallery-caption">Vocabulary frequency weights after custom tokenization and stopword removal cycles. Reflects prominent semantic dimensions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION T3: CLASSIFIEDS / SAMPLE STORY GRID -->
+            <div class="tab-panel" id="samplesTab">
+                <div class="analytics-desk-container">
+                    <div class="tab-title-block">
+                        <h2>Press Bulletin Archive</h2>
+                        <p>Archived wire transcripts from political, technological, economics, and health sectors</p>
+                    </div>
+
+                    <div class="classifieds-grid">
+                        <!-- Sample 1 -->
+                        <div class="classified-item">
+                            <div class="classified-header">
+                                <span class="classified-category">Politics</span>
+                                <span class="classified-status real-badge">Real Wire</span>
+                            </div>
+                            <p class="classified-text" id="sample1Text_T3">President signs historic executive order to lower prescription drug costs nationwide. The package contains guidelines for Medicare to negotiate drug rates directly, representing a major policy victory for seniors.</p>
+                            <button class="classified-action-btn" onclick="useSample(1)">Draft Story</button>
+                        </div>
+
+                        <!-- Sample 2 -->
+                        <div class="classified-item">
+                            <div class="classified-header">
+                                <span class="classified-category">Conspiracy</span>
+                                <span class="classified-status fake-badge">Fake Wire</span>
+                            </div>
+                            <p class="classified-text" id="sample2Text_T3">BREAKING: Secret NASA document proves Earth is flat and the moon is a hologram project by government. Whistleblowers leaked raw archives demonstrating that gravity is an illusion and space flights are recorded in studio pools.</p>
+                            <button class="classified-action-btn" onclick="useSample(2)">Draft Story</button>
+                        </div>
+
+                        <!-- Sample 3 -->
+                        <div class="classified-item">
+                            <div class="classified-header">
+                                <span class="classified-category">Science</span>
+                                <span class="classified-status real-badge">Real Wire</span>
+                            </div>
+                            <p class="classified-text" id="sample3Text_T3">Local high school science club wins international competition with revolutionary water purification system. The team from Westlake High constructed a lightweight, solar-powered filter using organic nanomaterials.</p>
+                            <button class="classified-action-btn" onclick="useSample(3)">Draft Story</button>
+                        </div>
+
+                        <!-- Sample 4 -->
+                        <div class="classified-item">
+                            <div class="classified-header">
+                                <span class="classified-category">Conspiracy</span>
+                                <span class="classified-status fake-badge">Fake Wire</span>
+                            </div>
+                            <p class="classified-text" id="sample4Text_T3">Alien spacecraft discovered in Giza pyramids containing high-tech laser weapons. Archaeologists scanning the pyramids uncovered hidden lead-shielded compartments housing glowing metallic components dating back 10,000 years.</p>
+                            <button class="classified-action-btn" onclick="useSample(4)">Draft Story</button>
+                        </div>
+
+                        <!-- Sample 5 -->
+                        <div class="classified-item">
+                            <div class="classified-header">
+                                <span class="classified-category">Technology</span>
+                                <span class="classified-status real-badge">Real Wire</span>
+                            </div>
+                            <p class="classified-text" id="sample5Text">Tech giant announces breakthrough 100-qubit quantum processor with room temperature stability. The new silicon-spin architecture operates without liquid helium cooling, paving the way for commercial quantum servers.</p>
+                            <button class="classified-action-btn" onclick="useSample(5)">Draft Story</button>
+                        </div>
+
+                        <!-- Sample 6 -->
+                        <div class="classified-item">
+                            <div class="classified-header">
+                                <span class="classified-category">Health</span>
+                                <span class="classified-status fake-badge">Fake Wire</span>
+                            </div>
+                            <p class="classified-text" id="sample6Text">New vitamin supplement completely cures all forms of aging and regenerates teeth overnight. The developer claims the secret compounds stimulate telomere growth and allow humans to live up to 200 years without cellular decay.</p>
+                            <button class="classified-action-btn" onclick="useSample(6)">Draft Story</button>
+                        </div>
+
+                        <!-- Sample 7 -->
+                        <div class="classified-item">
+                            <div class="classified-header">
+                                <span class="classified-category">Economy</span>
+                                <span class="classified-status real-badge">Real Wire</span>
+                            </div>
+                            <p class="classified-text" id="sample7Text">Global climate pact signed by 190 nations to restrict carbon emissions by 40% over the next decade. The agreement institutes binding carbon credits and investments in green energy projects for developing nations.</p>
+                            <button class="classified-action-btn" onclick="useSample(7)">Draft Story</button>
+                        </div>
+
+                        <!-- Sample 8 -->
+                        <div class="classified-item">
+                            <div class="classified-header">
+                                <span class="classified-category">Economy</span>
+                                <span class="classified-status fake-badge">Fake Wire</span>
+                            </div>
+                            <p class="classified-text" id="sample8Text">Financial crisis averted as bank introduces negative interest rate where they pay you to borrow money. The central bank announced that consumers taking home loans will receive a monthly stipend directly into checking accounts.</p>
+                            <button class="classified-action-btn" onclick="useSample(8)">Draft Story</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION T4: LIVE TEXT PROFILER -->
+            <div class="tab-panel" id="analyticsDeskTab">
+                <div class="analytics-desk-container">
+                    <div class="tab-title-block">
+                        <h2>Live Document Profiler & Metrics</h2>
+                        <p>Real-time lexical distribution and model probability spreads computed on the verified text</p>
+                    </div>
+
+                    <div id="noAnalysisPlaceholder" style="text-align: center; padding: 5rem 2rem; border: 1px dashed var(--border-color); background: #ffffff;">
+                        <p style="font-family: var(--font-serif); font-size: 1.5rem; font-style: italic; color: var(--text-muted); margin-bottom: 0.5rem;">
+                            No Text Drafted For Analysis Yet
+                        </p>
+                        <p style="font-family: var(--font-sans); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">
+                            Paste an article and execute verification on the Front Page to generate real-time metrics.
+                        </p>
+                    </div>
+
+                    <div id="analysisDashboard" style="display: none;">
+                        <!-- Grid of dynamic charts -->
+                        <div class="analytics-gallery-grid" style="margin-bottom: 2rem;">
+                            <div class="gallery-card">
+                                <h3>Lexical Keyword Frequency</h3>
+                                <div style="height: 320px; position: relative; width: 100%;">
+                                    <canvas id="wordFreqChart"></canvas>
+                                </div>
+                                <p class="gallery-caption">Distribution of the top 8 cleanest keyword tokens in the analyzed copy (excluding standard stopwords).</p>
+                            </div>
+                            <div class="gallery-card">
+                                <h3>Classifier Probability Spread</h3>
+                                <div style="height: 320px; position: relative; width: 100%;">
+                                    <canvas id="modelProbChart"></canvas>
+                                </div>
+                                <p class="gallery-caption">Real vs Fake prediction probability percentages compared side-by-side across KNN, Logistic Regression, Random Forest, and MLP Neural Net classifiers.</p>
+                            </div>
+                        </div>
+
+                        <!-- Stats table -->
+                        <div class="gallery-card" style="width: 100%;">
+                            <h3>Dynamic Document Statistics Profile</h3>
+                            <div style="overflow-x: auto; margin-top: 1rem; width: 100%;">
+                                <table class="stat-table-box">
+                                    <thead>
+                                        <tr style="font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">
+                                            <th style="padding: 0.6rem 0.5rem;">Metric Type</th>
+                                            <th style="padding: 0.6rem 0.5rem;">Computed Value</th>
+                                            <th style="padding: 0.6rem 0.5rem;">Metric Type</th>
+                                            <th style="padding: 0.6rem 0.5rem;">Computed Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="padding: 0.6rem 0.5rem; font-weight: 700;">Word Count</td>
+                                            <td style="padding: 0.6rem 0.5rem;" id="statWordCount">-</td>
+                                            <td style="padding: 0.6rem 0.5rem; font-weight: 700;">Character Count</td>
+                                            <td style="padding: 0.6rem 0.5rem;" id="statCharCount">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 0.6rem 0.5rem; font-weight: 700;">Sentence Count</td>
+                                            <td style="padding: 0.6rem 0.5rem;" id="statSentenceCount">-</td>
+                                            <td style="padding: 0.6rem 0.5rem; font-weight: 700;">Average Word Length</td>
+                                            <td style="padding: 0.6rem 0.5rem;" id="statAvgWordLength">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 0.6rem 0.5rem; font-weight: 700;">Estimated Read Time</td>
+                                            <td style="padding: 0.6rem 0.5rem;" id="statReadTime">-</td>
+                                            <td style="padding: 0.6rem 0.5rem; font-weight: 700;">Clean Tokens Ratio</td>
+                                            <td style="padding: 0.6rem 0.5rem;" id="statCleanRatio">-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="gallery-caption" style="margin-top: 1rem;">Linguistic structural distributions generated directly from raw character buffers during the manual tokenization and cleansing phase.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Newspaper Page Footer -->
+            <footer style="border-top: 1px solid var(--text-main); border-bottom: 1px solid var(--border-color); padding: 1.5rem 0; margin-top: 3.5rem; text-align: center; font-family: var(--font-serif); font-size: 0.8rem; font-style: italic;">
+                <p>Copyright &copy; 2026 The TruthGuard Times. All editorial verification metrics compiled on live local networks.</p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Hidden elements containing sample texts used by the JS loader script (supports sample loader compatibility) -->
+    <div style="display:none;">
+        <p id="sample5Text_hidden">Tech giant announces breakthrough 100-qubit quantum processor with room temperature stability. The new silicon-spin architecture operates without liquid helium cooling, paving the way for commercial quantum servers.</p>
+        <p id="sample6Text_hidden">New vitamin supplement completely cures all forms of aging and regenerates teeth overnight. The developer claims the secret compounds stimulate telomere growth and allow humans to live up to 200 years without cellular decay.</p>
+        <p id="sample7Text_hidden">Global climate pact signed by 190 nations to restrict carbon emissions by 40% over the next decade. The agreement institutes binding carbon credits and investments in green energy projects for developing nations.</p>
+        <p id="sample8Text_hidden">Financial crisis averted as bank introduces negative interest rate where they pay you to borrow money. The central bank announced that consumers taking home loans will receive a monthly stipend directly into checking accounts.</p>
+    </div>
+
+    <script>
+        // Set dynamic date in header
+        document.addEventListener("DOMContentLoaded", () => {
+            const dateEl = document.getElementById("currentDate");
+            if (dateEl) {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                dateEl.innerText = new Date().toLocaleDateString('en-US', options);
+            }
+        });
+
+        // Stopwords set for Javascript Word Frequency extraction
+        const STOPWORDS = new Set([
+            "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", 
+            "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", 
+            "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", 
+            "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", 
+            "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", 
+            "did", "doing", "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", 
+            "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", 
+            "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", 
+            "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", 
+            "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", 
+            "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", 
+            "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now"
+        ]);
+
+        let wordFreqChartInstance = null;
+        let modelProbChartInstance = null;
+
+        // Redirect helper
+        function goToAnalyticsDesk() {
+            const item = document.querySelector(".nav-menu .nav-item:nth-child(4)");
+            switchTab(item, 'analyticsDeskTab');
+        }
+
+        // Real-Time Analytics rendering engine
+        function renderRealTimeCharts(text, data) {
+            // 1. Calculate word frequency
+            const cleaned = text.toLowerCase().replace(/[^a-zA-Z\s]/g, ' ');
+            const rawTokens = cleaned.split(/\s+/).filter(t => t.length > 0);
+            const cleanTokens = rawTokens.filter(t => t.length > 2 && !STOPWORDS.has(t));
+            
+            const freqMap = {};
+            cleanTokens.forEach(word => {
+                freqMap[word] = (freqMap[word] || 0) + 1;
+            });
+            
+            const sorted = Object.entries(freqMap)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8);
+            
+            const labels = sorted.map(x => x[0]);
+            const counts = sorted.map(x => x[1]);
+
+            // 2. Calculate text metrics
+            const wordCount = rawTokens.length;
+            const charCount = text.length;
+            const sentenceCount = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length || 1;
+            const avgWordLen = wordCount > 0 ? (rawTokens.reduce((sum, w) => sum + w.length, 0) / wordCount).toFixed(1) : 0;
+            const estReadTime = Math.ceil(wordCount / 200);
+            const cleanRatio = wordCount > 0 ? ((cleanTokens.length / wordCount) * 100).toFixed(1) + '%' : '0%';
+
+            // Update stats table
+            document.getElementById("statWordCount").innerText = wordCount;
+            document.getElementById("statCharCount").innerText = charCount;
+            document.getElementById("statSentenceCount").innerText = sentenceCount;
+            document.getElementById("statAvgWordLength").innerText = avgWordLen + " chars";
+            document.getElementById("statReadTime").innerText = estReadTime + " min";
+            document.getElementById("statCleanRatio").innerText = cleanRatio;
+
+            // Show dashboard, hide placeholder
+            document.getElementById("noAnalysisPlaceholder").style.display = "none";
+            document.getElementById("analysisDashboard").style.display = "block";
+
+            // 3. Render Word Frequency Chart
+            const ctx1 = document.getElementById('wordFreqChart').getContext('2d');
+            if (wordFreqChartInstance) {
+                wordFreqChartInstance.destroy();
+            }
+            
+            // Handle edge case of empty content
+            let chartLabels = [...labels];
+            let chartCounts = [...counts];
+            if (chartCounts.length === 0) {
+                chartLabels.push("No keywords");
+                chartCounts.push(0);
+            }
+            
+            wordFreqChartInstance = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Occurrences',
+                        data: chartCounts,
+                        backgroundColor: 'rgba(18, 18, 18, 0.85)',
+                        borderColor: '#121212',
+                        borderWidth: 1.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                font: { family: 'Inter', size: 10 }
+                            },
+                            grid: { color: '#eae7e2' }
+                        },
+                        x: {
+                            ticks: { font: { family: 'Inter', size: 10, weight: 'bold' } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // 4. Render Model Comparison Probability Chart
+            const ctx2 = document.getElementById('modelProbChart').getContext('2d');
+            if (modelProbChartInstance) {
+                modelProbChartInstance.destroy();
+            }
+
+            const knn = data.predictions.KNN;
+            const logreg = data.predictions.LogReg;
+            const rf = data.predictions.RandomForest;
+            const nn = data.predictions.NeuralNet;
+
+            modelProbChartInstance = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['KNN', 'Logistic Reg.', 'Random Forest', 'MLP Neural Net'],
+                    datasets: [
+                        {
+                            label: 'Real Probability (%)',
+                            data: [knn.prob_real, logreg.prob_real, rf.prob_real, nn.prob_real],
+                            backgroundColor: 'rgba(17, 107, 61, 0.75)',
+                            borderColor: '#116b3d',
+                            borderWidth: 1.5
+                        },
+                        {
+                            label: 'Fake Probability (%)',
+                            data: [knn.prob_fake, logreg.prob_fake, rf.prob_fake, nn.prob_fake],
+                            backgroundColor: 'rgba(140, 29, 29, 0.75)',
+                            borderColor: '#8c1d1d',
+                            borderWidth: 1.5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { family: 'Inter', size: 10 } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) { return value + "%"; },
+                                font: { family: 'Inter', size: 10 }
+                            },
+                            grid: { color: '#eae7e2' }
+                        },
+                        x: {
+                            ticks: { font: { family: 'Inter', size: 10, weight: 'bold' } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 1. Validate Credentials and Transition
+        function validateLogin() {
+            const user = document.getElementById("username").value.trim();
+            const pass = document.getElementById("password").value.trim();
+            const error = document.getElementById("loginError");
+            const screen = document.getElementById("loginScreen");
+            const dashboard = document.getElementById("dashboardContainer");
+
+            if (user === "admin" && pass === "admin123") {
+                // Fade out login screen
+                screen.style.opacity = "0";
+                setTimeout(() => {
+                    screen.style.display = "none";
+                    // Display dashboard
+                    dashboard.style.opacity = "1";
+                    dashboard.style.pointerEvents = "all";
+                }, 500);
+            } else {
+                error.style.display = "block";
+            }
+        }
+
+        // 2. Navigation Tab Swapping
+        function switchTab(clickedEl, tabId) {
+            // Remove active classes
+            document.querySelectorAll(".nav-menu .nav-item").forEach(el => el.classList.remove("active"));
+            document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.remove("active"));
+
+            // Add active classes
+            clickedEl.classList.add("active");
+            document.getElementById(tabId).classList.add("active");
+        }
+
+        // 3. Logout action
+        function handleLogout() {
+            const screen = document.getElementById("loginScreen");
+            const dashboard = document.getElementById("dashboardContainer");
+            
+            dashboard.style.opacity = "0";
+            dashboard.style.pointerEvents = "none";
+            
+            setTimeout(() => {
+                screen.style.display = "flex";
+                setTimeout(() => {
+                    screen.style.opacity = "1";
+                }, 50);
+            }, 500);
+        }
+
+        // 4. Sample Loader from the bank
+        function useSample(num) {
+            // Try to find the sample text inside the page
+            let sampleText = "";
+            const sampleEl = document.getElementById(`sample${num}Text`);
+            const sampleElT3 = document.getElementById(`sample${num}Text_T3`);
+            const sampleElHidden = document.getElementById(`sample${num}Text_hidden`);
+            
+            if (sampleEl) {
+                sampleText = sampleEl.innerText;
+            } else if (sampleElT3) {
+                sampleText = sampleElT3.innerText;
+            } else if (sampleElHidden) {
+                sampleText = sampleElHidden.innerText;
+            }
+            
+            if (sampleText) {
+                document.getElementById("newsText").value = sampleText;
+            }
+            
+            // Switch to detector tab (Front Page)
+            const detectorNavItem = document.querySelector(".nav-menu .nav-item:first-child");
+            switchTab(detectorNavItem, 'detectorTab');
+        }
+
+        // 5. Run API Predictions
+        async function analyzeNews() {
+            const text = document.getElementById("newsText").value.trim();
+            if (!text) {
+                alert("Please write or select a news article first.");
+                return;
+            }
+
+            const analyzeBtn = document.getElementById("analyzeBtn");
+            const loading = document.getElementById("loading");
+            const resultsPanel = document.getElementById("resultsPanel");
+
+            analyzeBtn.style.display = "none";
+            loading.style.display = "block";
+            resultsPanel.style.display = "none";
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error || "Failed to classify text.");
+                }
+
+                const data = await response.json();
+                
+                // Render consensus banner
+                const banner = document.getElementById("consensusBanner");
+                const verdictTitle = document.getElementById("consensusVerdict");
+                const verdictConf = document.getElementById("consensusConfidence");
+
+                if (data.consensus.verdict === 'FAKE') {
+                    banner.className = "consensus-banner fake";
+                    verdictTitle.innerText = "CONFIRMED FAKE NEWS";
+                    verdictConf.innerText = `Average Model Certainty: ${data.consensus.confidence}%`;
+                } else {
+                    banner.className = "consensus-banner real";
+                    verdictTitle.innerText = "VERIFIED REAL NEWS";
+                    verdictConf.innerText = `Average Model Certainty: ${data.consensus.confidence}%`;
+                }
+
+                // Render individual model cards
+                function updateModelCard(prefix, nameKey) {
+                    const modelData = data.predictions[nameKey];
+                    const badge = document.getElementById(`${prefix}Verdict`);
+                    const confText = document.getElementById(`${prefix}Confidence`);
+                    const bar = document.getElementById(`${prefix}Bar`);
+                    const splitText = document.getElementById(`${prefix}Split`);
+
+                    badge.innerText = modelData.prediction;
+                    badge.className = `verdict-badge ${modelData.prediction.toLowerCase()}`;
+                    confText.innerText = `${modelData.confidence}%`;
+
+                    bar.className = `meter-fill ${modelData.prediction.toLowerCase()}`;
+                    bar.style.width = '0%';
+                    setTimeout(() => {
+                        bar.style.width = `${modelData.confidence}%`;
+                    }, 50);
+
+                    splitText.innerText = `Real: ${modelData.prob_real}% | Fake: ${modelData.prob_fake}%`;
+                }
+
+                updateModelCard('knn', 'KNN');
+                updateModelCard('logreg', 'LogReg');
+                updateModelCard('rf', 'RandomForest');
+                updateModelCard('nn', 'NeuralNet');
+
+                // Render dynamic charts and stats table
+                renderRealTimeCharts(text, data);
+
+                resultsPanel.style.display = "block";
+
+            } catch (error) {
+                alert("Error classifying: " + error.message);
+            } finally {
+                loading.style.display = "none";
+                analyzeBtn.style.display = "flex";
+            }
+        }
+    </script>
+</body>
+</html>
