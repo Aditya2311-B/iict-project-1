@@ -587,30 +587,77 @@ st.markdown("""
         padding-left: 25px !important;
     }
 
-    /* Double bordered navigation horizontal link bar */
+    /* Double-Line Top / Bottom Navigation Bar */
     .nyt-nav-wrapper {
+        width: 100% !important;
         border-top: 3px double #121212 !important;
         border-bottom: 3px double #121212 !important;
-        margin: 0.8rem 0 1.8rem 0 !important;
-        padding: 0.4rem 0 !important;
-        width: 100% !important;
-        text-align: center !important;
-        display: flex !important;
-        justify-content: center !important;
-        gap: 2.5rem !important;
+        margin: 0.4rem 0 1.8rem 0 !important;
+        padding: 0.2rem 0 !important;
     }
-    .nav-link {
+
+    .nav-menu {
+        display: flex !important;
+        list-style: none !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        gap: 2.2rem !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .nav-item {
         font-family: 'Inter', sans-serif !important;
-        font-size: 0.85rem !important;
+        font-size: 0.8rem !important;
         font-weight: 800 !important;
         text-transform: uppercase !important;
-        letter-spacing: 0.1em !important;
+        letter-spacing: 0.12em !important;
         color: #555555 !important;
+        cursor: pointer !important;
+        padding: 0.4rem 0.2rem !important;
         text-decoration: none !important;
-        transition: color 0.2s ease !important;
+        transition: all 0.2s ease !important;
+        position: relative !important;
+        display: inline-block !important;
     }
-    .nav-link:hover, .nav-link.active {
+
+    .nav-item:hover, .nav-item.active {
         color: #121212 !important;
+    }
+
+    .nav-item.active::after {
+        content: '' !important;
+        position: absolute !important;
+        bottom: -0.1rem !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 2px !important;
+        background-color: #121212 !important;
+    }
+
+    .nav-item-right {
+        margin-left: auto !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .logout-btn {
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.7rem !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        color: #8c1d1d !important;
+        border: 1px solid #8c1d1d !important;
+        padding: 0.25rem 0.6rem !important;
+        cursor: pointer !important;
+        text-decoration: none !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .logout-btn:hover {
+        background: #8c1d1d !important;
+        color: #ffffff !important;
     }
 
     /* Textarea label formatting override */
@@ -784,11 +831,13 @@ t_classifieds = "active" if current_tab == "Classifieds Bank" else ""
 t_profiler = "active" if current_tab == "Live Text Profiler" else ""
 
 st.markdown(f"""<div class="nyt-nav-wrapper">
-    <a class="nav-link {t_front}" href="?tab=Front+Page" target="_self">Front Page</a>
-    <a class="nav-link {t_analytics}" href="?tab=Analytics+Desk" target="_self">Analytics Desk</a>
-    <a class="nav-link {t_classifieds}" href="?tab=Classifieds+Bank" target="_self">Classifieds Bank</a>
-    <a class="nav-link {t_profiler}" href="?tab=Live+Text+Profiler" target="_self">Live Text Profiler</a>
-    <a class="nav-link" href="?logout=true" target="_self">Sign Out</a>
+    <ul class="nav-menu">
+        <li><a class="nav-item {t_front}" href="?tab=Front+Page" target="_self">Front Page</a></li>
+        <li><a class="nav-item {t_analytics}" href="?tab=Analytics+Desk" target="_self">Analytics Desk</a></li>
+        <li><a class="nav-item {t_classifieds}" href="?tab=Classifieds+Bank" target="_self">Classifieds Bank</a></li>
+        <li><a class="nav-item {t_profiler}" href="?tab=Live+Text+Profiler" target="_self">Live Text Profiler</a></li>
+        <li class="nav-item-right"><a href="?logout=true" class="logout-btn" target="_self">Sign Out</a></li>
+    </ul>
 </div>""", unsafe_allow_html=True)
 
 # Loading classification core models
@@ -796,7 +845,7 @@ vectorizer, models = load_classification_resources()
 
 # ------------------ 3. FRONT PAGE TAB PANEL ------------------
 if st.session_state.current_tab == "Front Page":
-    col_left, col_center, col_right = st.columns([1.2, 2.3, 1.3])
+    col_left, col_center, col_right = st.columns([1, 2, 1])
     
     # LEFT COLUMN: WIRE STORY SELECTION
     with col_left:
