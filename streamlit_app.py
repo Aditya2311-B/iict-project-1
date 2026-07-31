@@ -5,6 +5,7 @@ import re
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import plotly.express as px
 
 # Set page configurations
 st.set_page_config(
@@ -1151,35 +1152,68 @@ elif st.session_state.current_tab == "Live Text Profiler":
         chart_col1, chart_col2 = st.columns(2)
         
         with chart_col1:
-            st.markdown("<div class='model-card'><h3>Lexical Keyword Frequency</h3></div>", unsafe_allow_html=True)
+            st.markdown("<div class='model-card'><h3>Lexical Keyword Distribution</h3></div>", unsafe_allow_html=True)
             if word_counts:
-                chart_df = pd.DataFrame({
-                    "Keyword": word_labels,
-                    "Count": word_counts
-                }).set_index("Keyword")
-                st.bar_chart(chart_df, color="#121212", height=320)
+                # Custom Plotly Donut Chart for Keywords
+                fig_words = px.pie(
+                    names=word_labels,
+                    values=word_counts,
+                    hole=0.4,
+                    color_discrete_sequence=['#1d1c1a', '#3e3c39', '#5e5b56', '#7e7b74', '#9e9c93', '#bebcb3', '#dedcd2', '#eeebe2']
+                )
+                fig_words.update_traces(
+                    textinfo='percent+label',
+                    hoverinfo='label+value',
+                    marker=dict(line=dict(color='#faf9f6', width=2))
+                )
+                fig_words.update_layout(
+                    showlegend=False,
+                    paper_bgcolor='#faf9f6',
+                    plot_bgcolor='#faf9f6',
+                    margin=dict(t=10, b=10, l=10, r=10),
+                    height=320,
+                    font=dict(family="Playfair Display, Georgia, serif", size=11, color="#121212")
+                )
+                st.plotly_chart(fig_words, use_container_width=True)
             else:
                 st.info("No clean keywords found.")
-            st.markdown("<p class='illustration-caption'>Distribution of the top 8 cleanest keyword tokens in the analyzed copy.</p>", unsafe_allow_html=True)
+            st.markdown("<p class='illustration-caption'>Proportional share distribution of the top 8 cleanest keyword tokens in the article copy.</p>", unsafe_allow_html=True)
             
         with chart_col2:
-            st.markdown("<div class='model-card'><h3>Classifier Probability Spread</h3></div>", unsafe_allow_html=True)
+            st.markdown("<div class='model-card'><h3>Consensus Authenticity Dial</h3></div>", unsafe_allow_html=True)
             preds = results['predictions']
             
-            # Map probabilities to a chart DataFrame
-            models_list = ['KNN', 'Logistic Reg.', 'Random Forest', 'MLP Neural Net']
-            real_probs = [preds['KNN']['prob_real'], preds['LogReg']['prob_real'], preds['RandomForest']['prob_real'], preds['NeuralNet']['prob_real']]
-            fake_probs = [preds['KNN']['prob_fake'], preds['LogReg']['prob_fake'], preds['RandomForest']['prob_fake'], preds['NeuralNet']['prob_fake']]
+            # Compute average probabilities across all 4 ensemble models
+            avg_real = sum(p['prob_real'] for p in preds.values()) / 4
+            avg_fake = sum(p['prob_fake'] for p in preds.values()) / 4
             
-            prob_df = pd.DataFrame({
-                "Model": models_list,
-                "Real %": real_probs,
-                "Fake %": fake_probs
-            }).set_index("Model")
-            
-            # Streamlit native chart
-            st.bar_chart(prob_df, height=320, color=["#116b3d", "#8c1d1d"])
-            st.markdown("<p class='illustration-caption'>Real vs Fake prediction probability percentages compared side-by-side across ensemble classifiers.</p>", unsafe_allow_html=True)
+            # Custom Plotly Donut Chart for Probability Split
+            fig_prob = px.pie(
+                names=['Verified Real', 'Suspicious Fake'],
+                values=[avg_real, avg_fake],
+                hole=0.5,
+                color=['Verified Real', 'Suspicious Fake'],
+                color_discrete_map={
+                    'Verified Real': '#116b3d',
+                    'Suspicious Fake': '#8c1d1d'
+                }
+            )
+            fig_prob.update_traces(
+                textinfo='percent+label',
+                hoverinfo='label+percent',
+                marker=dict(line=dict(color='#faf9f6', width=3))
+            )
+            fig_prob.update_layout(
+                showlegend=True,
+                legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5),
+                paper_bgcolor='#faf9f6',
+                plot_bgcolor='#faf9f6',
+                margin=dict(t=10, b=10, l=10, r=10),
+                height=320,
+                font=dict(family="Playfair Display, Georgia, serif", size=12, color="#121212")
+            )
+            st.plotly_chart(fig_prob, use_container_width=True)
+            st.markdown("<p class='illustration-caption'>Aggregated consensus probability distribution calculated dynamically across all 4 pipeline classifiers.</p>", unsafe_allow_html=True)
             
         # Stats table
         st.markdown(f"""
